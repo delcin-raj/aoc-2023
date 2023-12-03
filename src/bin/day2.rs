@@ -1,10 +1,10 @@
 use nom::{
-    IResult,
-    sequence::{delimited, separated_pair},
     branch::alt,
-    multi::separated_list0,
-    character::complete::{char, u64, space1, space0},
     bytes::complete::tag,
+    character::complete::{char, space0, space1, u64},
+    multi::separated_list0,
+    sequence::{delimited, separated_pair},
+    IResult,
 };
 use std::fs;
 use std::io::{self};
@@ -25,7 +25,7 @@ type Round = Vec<ColorCount>;
 #[derive(PartialEq, Eq, Debug)]
 struct Game {
     id: GameId,
-    rounds: Vec<Round>
+    rounds: Vec<Round>,
 }
 
 #[derive(PartialEq, Eq, Debug)]
@@ -68,7 +68,7 @@ fn round(input: &str) -> IResult<&str, Round> {
 fn game(input: &str) -> IResult<&str, Game> {
     let (input1, id) = game_id(input)?;
     let (input2, rounds) = separated_list0(char(';'), round)(input1)?;
-    Ok((input2, Game{id, rounds}))
+    Ok((input2, Game { id, rounds }))
 }
 
 fn games(input: &str) -> IResult<&str, Vec<Game>> {
@@ -79,9 +79,21 @@ fn score_game(game: &Game) -> u64 {
     for r in game.rounds.iter() {
         for b in r {
             match b {
-                ColorCount::Red(v) => if *v > RED {return 0;},
-                ColorCount::Green(v) => if *v > GREEN {return 0;},
-                ColorCount::Blue(v) => if *v > BLUE {return 0;},
+                ColorCount::Red(v) => {
+                    if *v > RED {
+                        return 0;
+                    }
+                }
+                ColorCount::Green(v) => {
+                    if *v > GREEN {
+                        return 0;
+                    }
+                }
+                ColorCount::Blue(v) => {
+                    if *v > BLUE {
+                        return 0;
+                    }
+                }
             }
         }
     }
@@ -89,19 +101,25 @@ fn score_game(game: &Game) -> u64 {
 }
 
 fn min_cubes(rounds: &Vec<Round>) -> u64 {
-    let (mut r, mut b, mut g) = (0, 0 ,0);
+    let (mut r, mut b, mut g) = (0, 0, 0);
     for round in rounds.iter() {
         for c in round.iter() {
             match c {
-                ColorCount::Red(v) => if *v > r {
-                    r = *v;
-                },
-                ColorCount::Blue(v) => if *v > b {
-                    b = *v;
-                },
-                ColorCount::Green(v) => if *v > g {
-                    g = *v;
-                },
+                ColorCount::Red(v) => {
+                    if *v > r {
+                        r = *v;
+                    }
+                }
+                ColorCount::Blue(v) => {
+                    if *v > b {
+                        b = *v;
+                    }
+                }
+                ColorCount::Green(v) => {
+                    if *v > g {
+                        g = *v;
+                    }
+                }
             }
         }
     }
@@ -129,15 +147,14 @@ mod tests {
 
     #[test]
     fn test_game_id() {
-        assert_eq!(game_id("Game 11: 5 blue, 6 red, 10 green"),
-        Ok((" 5 blue, 6 red, 10 green", GameId(11)))
-    );
+        assert_eq!(
+            game_id("Game 11: 5 blue, 6 red, 10 green"),
+            Ok((" 5 blue, 6 red, 10 green", GameId(11)))
+        );
     }
 
     #[test]
     fn test_color() {
-        assert_eq!(blue("5 blue, 6 red"),
-        Ok((", 6 red", ColorCount::Blue(5)))
-    );
+        assert_eq!(blue("5 blue, 6 red"), Ok((", 6 red", ColorCount::Blue(5))));
     }
 }

@@ -12,33 +12,44 @@ fn is_digit(b: u8) -> bool {
     b >= ZERO && b <= NINE
 }
 
-fn is_part(left: usize, right: usize, row: usize, matrix: &Vec<&[u8]>) -> (bool, Option<(usize, usize)>) {
+fn is_part(
+    left: usize,
+    right: usize,
+    row: usize,
+    matrix: &Vec<&[u8]>,
+) -> (bool, Option<(usize, usize)>) {
     let (m, n) = (matrix.len(), matrix[0].len());
     let r = matrix[row];
     let part_but_not_star = (true, None);
 
     if left > 0 && r[left - 1] != DOT {
-        if r[left - 1] == STAR {return (true, Some((row, left - 1)))}
+        if r[left - 1] == STAR {
+            return (true, Some((row, left - 1)));
+        }
         return part_but_not_star;
     }
 
     if right + 1 < n && r[right + 1] != DOT {
-        if r[right + 1] == STAR {return (true, Some((row, right + 1)))}
+        if r[right + 1] == STAR {
+            return (true, Some((row, right + 1)));
+        }
         return part_but_not_star;
     }
 
-    let l_end = if left > 0 {left - 1} else {left};
-    let r_end = if right + 1 < n {right + 1} else {right};
+    let l_end = if left > 0 { left - 1 } else { left };
+    let r_end = if right + 1 < n { right + 1 } else { right };
 
     if row > 0 {
         let r_n = row - 1;
         let mut i = l_end;
         let r = matrix[r_n];
 
-        while i  <= r_end {
+        while i <= r_end {
             if r[i] != DOT {
                 if r[i] == STAR {
-                    if r[i] == STAR {return (true, Some((r_n, i)))}
+                    if r[i] == STAR {
+                        return (true, Some((r_n, i)));
+                    }
                     return part_but_not_star;
                 }
                 return part_but_not_star;
@@ -52,11 +63,12 @@ fn is_part(left: usize, right: usize, row: usize, matrix: &Vec<&[u8]>) -> (bool,
         let mut i = l_end;
         let r = matrix[r_n];
 
-        while i  <= r_end {
+        while i <= r_end {
             if r[i] != DOT {
-                if r[i] == STAR {return (true, Some((r_n, i)))}
+                if r[i] == STAR {
+                    return (true, Some((r_n, i)));
+                }
                 return part_but_not_star;
-
             }
             i += 1;
         }
@@ -92,7 +104,9 @@ fn main() -> io::Result<()> {
         while left < n {
             if is_digit(r[left]) {
                 let mut right = left + 1;
-                while right < n && is_digit(r[right]) {right += 1;}
+                while right < n && is_digit(r[right]) {
+                    right += 1;
+                }
                 let (part, star) = is_part(left, right - 1, row, &matrix);
                 if part {
                     let mut f = 1;
@@ -111,7 +125,9 @@ fn main() -> io::Result<()> {
                     if let Some(point) = star {
                         match star_map.get(&point) {
                             Some(v) => gear_sum += v * num,
-                            None => {star_map.insert(point, num);}
+                            None => {
+                                star_map.insert(point, num);
+                            }
                         }
                     }
                 }
@@ -126,5 +142,4 @@ fn main() -> io::Result<()> {
     println!("{gear_sum}");
 
     Ok(())
-
 }
