@@ -144,6 +144,7 @@ fn main() -> io::Result<()> {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use nom::sequence::preceded;
 
     #[test]
     fn test_game_id() {
@@ -156,5 +157,11 @@ mod tests {
     #[test]
     fn test_color() {
         assert_eq!(blue("5 blue, 6 red"), Ok((", 6 red", ColorCount::Blue(5))));
+    }
+
+    #[test]
+    fn u64_test() {
+        let r: IResult<&str, _> = preceded(space0, u64)("  45");
+        assert_eq!(r, Ok(("", 45 as u64)));
     }
 }
